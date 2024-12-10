@@ -431,16 +431,31 @@ print_exit:	DOS	_PRINT
 * コマンド 系 --------------------------------- *
 
 command_x:
-		move.l	(syscall_adr,a6),d0
-		beq	print_level		;未常駐時は 0 を表示
-
-		moveq	#0,d1			;停止レベルの収得
+		moveq	#0,d1			;停止レベルの取得
 		bsr	call_stop_level
-print_level:
+@@:
 		lea	(buffer,pc),a0
 		pea	(a0)
 		FPACK	__LTOS			;文字列に変換
 		bra	print_line
+
+command_xoff:
+		moveq	#+1,d1			;stop_level++
+		bra	call_stop_level
+
+command_xon:
+		moveq	#-1,d1			;stop_level--
+		bra	call_stop_level
+
+call_stop_level:
+		move.l	(syscall_adr,a6),d0
+		beq	@f			;未常駐時は 0 を返す
+
+		moveq	#COND_LEVEL,d0
+		bra	call_sys_call
+@@:
+		rts
+
 
 command_k:
 		tst.l	(syscall_adr,a6)	*
@@ -910,6 +925,17 @@ check_condrv:
 		bmi	condrv_err2
 		rts
 
+get_cond_ver:
+		moveq	#COND_GETVER,d0
+		bra	call_sys_call
+
+call_sys_call:
+		move.l	(syscall_adr,a6),-(sp)
+		DOS	_SUPER_JSR
+		addq.l	#4,sp
+		rts
+
+
 command_sleep:
 		move.l	#-1<<16+THREAD_SLEEP,d5
 		bra	@f
@@ -1070,26 +1096,6 @@ strcmp_loop:
 strcmp_nul:
 		tst.b	(a0)+
 @@:		POP	d0/a0-a1
-		rts
-
-
-get_cond_ver:
-		moveq	#COND_GETVER,d0
-		bra	call_sys_call
-
-command_xoff:
-		moveq	#+1,d1			;stop_level++
-		bra	call_stop_level
-command_xon:
-		moveq	#-1,d1			;stop_level--
-call_stop_level:
-		moveq	#COND_LEVEL,d0
-		bra	call_sys_call
-
-call_sys_call:
-		move.l	(syscall_adr,a6),-(sp)
-		DOS	_SUPER_JSR
-		addq.l	#4,sp
 		rts
 
 
