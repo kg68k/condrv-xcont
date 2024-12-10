@@ -1,15 +1,13 @@
 		.title	condrv(em).sys manager XCONT
 
 PROGRAM:	.reg	'xcont'
-VERSION:	.reg	'1.0.0-beta.1'
+VERSION:	.reg	'1.0.0'
 DATE:		.reg	'2024'
 AUTHOR:		.reg	'TcbnErik'
 
 
 # symbols
 #	__CRLF__	CRLF 改行を出力する(標準では LF 改行).
-#	__OLD_FUNC__	-x のバッファリング停止は movem を rts に
-#			書き換える(標準ではシステムコール $24 を使う).
 #	SLASH_CNV	実行ファイル検索時に '/' -> '\'
 
 
@@ -57,6 +55,8 @@ EXEC_NAME_SIZE:	.equ	256
 BG_USP_SIZE:	.equ	64+466
 BG_SSP_SIZE:	.equ	5*1024
 		.fail	STACK_SIZE<(BG_USP_SIZE+BG_SSP_SIZE)
+
+BG_INITIAL_SR:	.equ	$2000			;supervisor mode
 
 		.offset	0
 syscall_adr:	.ds.l	1
@@ -246,11 +246,7 @@ openpr_and_keep:
 		pea	(100)			;初期スリープ時間0.1秒
 		pea	(bg_combuf,pc)		;通信バッファ
 		pea	(bg_start,pc)		;初期pc
-		.if	0
-		clr	-(sp)			;初期sr
-		.else
-		move	#$2000,-(sp)		;supervisor mode
-		.endif
+		move	#BG_INITIAL_SR,-(sp)	;初期sr
 		pea	(bg_ssp_bottom,pc)	;初期ssp
 		pea	(bg_usp_bottom,pc)	;初期usp
 		move	(priority,a6),-(sp)	;実行優先レベル
@@ -845,17 +841,8 @@ exec_load_ok:
 
 		tst.l	(syscall_adr,a6)
 		beq	@f
-
-	.ifdef	__OLD_FUNC__
-		bsr	get_bufinp_addr		*
-		IOCS	_B_WPEEK		* 現在のモードを得る
-		move	d0,d7
-
-		bsr	command_off		* 取り込みを停止する
-	.else
 		bsr	command_xoff		;stop_level++
 		move.l	d0,d7
-	.endif
 @@:
 		move.l	d7,-(sp)
 		move.l	a6,-(sp)
@@ -871,17 +858,9 @@ exec_load_ok:
 
 		tst.l	(syscall_adr,a6)
 		beq	@f
-
-	.ifdef	__OLD_FUNC__
-		bsr	get_bufinp_addr		*
-		move	d7,d1			* 以前のモードに戻す
-		IOCS	_B_WPOKE		*
-		bsr	conctrl_fncmod
-	.else
 		tst.l	d7
 		bmi	@f
 		bsr	command_xon		;stop_level--
-	.endif
 @@:
 		DOS	_EXIT2
 
