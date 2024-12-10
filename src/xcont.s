@@ -20,6 +20,7 @@ AUTHOR:		.reg	'TcbnErik'
 		.include	fefunc.mac
 		.include	console.mac
 		.include	doscall.mac
+		.include	filesys.mac
 		.include	iocscall.mac
 
 
@@ -640,7 +641,7 @@ read_from_stdin:
 		movea.l	d0,a5
 
 *XCON をオープンする
-		move	#WOPEN,-(sp)
+		move	#OPENMODE_WRITE,-(sp)
 		pea	(xcon,pc)
 		DOS	_OPEN
 		addq.l	#6,sp
@@ -756,7 +757,7 @@ option_x:
 		clr.l	-(sp)			環境
 		move.l	a4,-(sp)		ダミーのコマンドラインバッファ
 		move.l	a5,-(sp)		ファイル名
-		move	#EXEC_PATHCHK,-(sp)	検索
+		move	#EXECMODE_PATHCHK,-(sp)
 		DOS	_EXEC
 		.ifndef	SLASH_CNV
 		tst.l	d0
@@ -819,7 +820,7 @@ exec_load_ok:
 		clr.l	-(sp)			環境
 		move.l	a4,-(sp)		コマンドライン
 		move.l	a5,-(sp)		ファイル名
-		move	#EXEC_LOAD,-(sp)	ロードのみ
+		move	#EXECMODE_LOAD,-(sp)
 		DOS	_EXEC
 		lea	(14,sp),sp
 		move.l	d0,d6
