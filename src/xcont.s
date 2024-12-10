@@ -1,8 +1,8 @@
 		.title	condrv(em).sys manager XCONT
 
 PROGRAM:	.reg	'xcont'
-VERSION:	.reg	'0.72'
-DATE:		.reg	'2022-06-19'
+VERSION:	.reg	'1.0.0-beta.1'
+DATE:		.reg	'2024'
 AUTHOR:		.reg	'TcbnErik'
 
 
@@ -1410,7 +1410,7 @@ title_mes:
 version_mes:
 		.dc.b	'XCONT version ',VERSION
 version_mes_end:
-		.dc.b	'  ',DATE,' ',AUTHOR,'.'
+		.dc.b	'  Copyright ',DATE,' ',AUTHOR,'.'
 crlf:		.dc.b	CRLF,0
 
 **usage_mes:
@@ -1419,21 +1419,21 @@ crlf:		.dc.b	CRLF,0
 usage_mes:
 		.dc.b	'usage: ',PROGRAM,' [option] ...',CRLF
 		.dc.b	'option:',CRLF
-		.dc.b	'	on / off	取り込み開始 / 停止',CRLF
-		.dc.b	'	省略		取り込み状態表示',CRLF
-		.dc.b	'	xon / xoff	停止レベル++ / 停止レベル--',CRLF
-		.dc.b	'	x		停止レベル表示',CRLF
-		.dc.b	'	kon / koff	キー操作許可 / 禁止',CRLF
-		.dc.b	'	k		キー状態表示',CRLF
-		.dc.b	'	push / pop	状態退避 / 復帰',CRLF
-		.dc.b	'	check / ver	常駐検査 / バージョン表示',CRLF
-		.dc.b	'	sleep / wakeup	スリープ / 再起動',CRLF
-		.dc.b	'	-f[num]		システムライン表示(0:表示 [1]:抑制)',CRLF
-		.dc.b	'	-j[num]		コード入力時のペースト文字(0:全て [1]:16 進数のみ)',CRLF
-		.dc.b	'	-l<file>	ファイル取り込み',CRLF
-		.dc.b	'	-x<cmd> ...	取り込みを停止してファイル実行',CRLF
-		.dc.b	'	-z[p][,s]	常駐(p:優先順位 s:スリープ時間)',CRLF
-		.dc.b	'	-r		常駐解除',CRLF
+		.dc.b	'  省略         取り込み状態表示',CRLF
+		.dc.b	'  on / off     取り込み開始 / 停止',CRLF
+		.dc.b	'  x            停止レベル表示',CRLF
+		.dc.b	'  xon / xoff   停止レベル-1 / 停止レベル+1',CRLF
+		.dc.b	'  k            キー状態表示',CRLF
+		.dc.b	'  kon / koff   キー操作許可 / 禁止',CRLF
+		.dc.b	'  push / pop   状態退避 / 復帰',CRLF
+		.dc.b	'  check / ver  常駐検査 / バージョン表示',CRLF
+		.dc.b	'  sleep / wakeup  スリープ / 再起動',CRLF
+		.dc.b	'  -f[num]      システムライン表示(0:表示 [1]:抑制)',CRLF
+		.dc.b	'  -j[num]      コード入力時のペースト文字(0:全て [1]:16 進数のみ)',CRLF
+		.dc.b	'  -l<file>     ファイル取り込み',CRLF
+		.dc.b	'  -x<cmd> ...  取り込みを停止してファイル実行',CRLF
+		.dc.b	'  -z[p][,s]    常駐(p:優先順位 s:スリープ時間)',CRLF
+		.dc.b	'  -r           常駐解除',CRLF
 		.dc.b	0
 
 command_list:
@@ -1468,12 +1468,12 @@ stdin_mes:	.dc.b	'<stdin>',0
 hyphen:		.dc.b	'-',0
 
 condrv_err_mes:
-		.dc.b	'condrv(em).sys は組み込まれていません.',0
+		.dc.b	'condrv(em).sys は組み込まれていません。',0
 condrv_err_mes2:
-		.dc.b	'condrv.sys は純正品です.',0
+		.dc.b	'condrv.sys は純正品です。',0
 
 mem_err_mes:
-		.dc.b	'メモリが足りません.',0
+		.dc.b	'メモリが足りません。',0
 
 arg_err_mes:
 		.dc.b	'引数が無効です:',0
@@ -1508,25 +1508,25 @@ fread_err_mes:
 		.dc.b	'ファイルが読めません:',0
 
 push_err_mes:
-		.dc.b	'これ以上スタックに積めません.',0
+		.dc.b	'これ以上スタックに積めません。',0
 pop_err_mes:
-		.dc.b	'スタックは空です.',0
+		.dc.b	'スタックは空です。',0
 
 keep_mes:
-		.dc.b	'常駐しました.',CRLF,0
+		.dc.b	'常駐しました。',CRLF,0
 already_keep_mes:
-		.dc.b	'既に常駐しています.',0
+		.dc.b	'既に常駐しています。',0
 thread_full_mes:
-		.dc.b	'これ以上バックグラウンドプロセスを起動出来ません.',0
+		.dc.b	'これ以上バックグラウンドプロセスを起動できません。',0
 proccess_err_mes:
-		.dc.b	'CONFIG.SYS で PROCESS が設定されていません.',0
+		.dc.b	'CONFIG.SYS で PROCESS が設定されていません。',0
 
 release_mes:
-		.dc.b	'常駐解除しました.',CRLF,0
+		.dc.b	'常駐解除しました。',CRLF,0
 not_keep_mes:
-		.dc.b	'常駐していません.',0
+		.dc.b	'常駐していません。',0
 release_err_mes:
-		.dc.b	'常駐解除出来ませんでした.',0
+		.dc.b	'常駐解除できませんでした。',0
 
 
 * Block Storage Section ----------------------- *
