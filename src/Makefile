@@ -46,19 +46,13 @@ endif
 	$(AS) $(ASFLAGS) -o $@ $^
 
 
-archive: $(XCONT_ZIP)
+PKGTMP = pkgtmp
 
-$(XCONT_ZIP): $(DOCS) $(TARGET)
-	rm -f $@
-	zip -9 $@ $^
+$(PKGTMP):
+	mkdir $@
 
-LICENSE: $(SRC_DIR)/../LICENSE
-	rm -f $@
-	$(CP_P) $^ $@
-
-%.txt: $(SRC_DIR)/../%.txt
-	rm -f $@
-	$(U8TOSJ) < $^ > $@
+archive: $(PKGTMP) $(TARGET)
+	make -C $(PKGTMP) -f ../Package.mk
 
 
 # EOF
