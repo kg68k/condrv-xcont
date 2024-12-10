@@ -500,10 +500,12 @@ command_ver:
 
 command_push:
 		moveq	#1,d1
+		lea	(push_err_mes,pc),a0	;エラー発生時に表示する文字列
 		bra	@f
 command_pop:
 		pea	(conctrl_fncmod,pc)	POP時はシステムステータスを書き直す
 		moveq	#0,d1
+		lea	(pop_err_mes,pc),a0	;エラー発生時に表示する文字列
 @@:
 		tst.l	(syscall_adr,a6)	*
 		beq	@f			* 未常駐時は何もしない
@@ -1119,13 +1121,7 @@ memory_error:
 stack_error:
 		addq.l	#1,d0
 		beq	condrv_err2		d0.l=-1
-		lea	(push_err_mes,pc),a0
-		tst	d2
-		bne	@f
-		lea	(pop_err_mes,pc),a0
-@@:
 		moveq	#EXIT_STACKERR,d1
-		bra	1f
 1:
 		suba.l	a1,a1
 		bra	error_exit
